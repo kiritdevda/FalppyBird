@@ -5,6 +5,8 @@ Class = require 'class'
 require 'Bird'
 require 'Pipe'
 
+require 'PipesPair'
+
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
@@ -27,6 +29,7 @@ local GROUND_LOOPING_POINT = 413
 
 local bird = Bird()
 local pipes = {}
+--local pipesPair = PipesPair()
 
 local spwanTimer = 0
 
@@ -59,7 +62,7 @@ function resestPressedKey()
 end
 
 function love.graphics.wasKeyPressed(key)
-    print("love.graphics.wasKeyPressed() called")
+    --print("love.graphics.wasKeyPressed() called")
     if love.graphics.keypressed[key] then
         return true
     else
@@ -84,8 +87,9 @@ function love.update(dt)
     groundX_Positiion = ( groundX_Positiion + GROUND_SPEED * dt ) % GROUND_LOOPING_POINT
 
     bird:update(dt)
-    if spwanTimer > 2 then
-        table.insert( pipes, Pipe() )
+    if spwanTimer > 2.5 then
+
+        table.insert( pipes, PipePair(60, 180) )
         spwanTimer = 0
     end
 
@@ -94,7 +98,8 @@ function love.update(dt)
     for k, pipe in pairs(pipes) do
         pipe:update(dt)
 
-        if pipe.x < -pipe.width then
+        if pipe.pipes['top'].x < -pipe.pipes['top'].width then
+            print("pipe pair removed from table")
             table.remove(pipes, k)
         end
     end
