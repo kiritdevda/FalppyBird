@@ -112,6 +112,7 @@ function love.update(dt)
     bird:update(dt)
     if bird.y > VIRTUAL_HEIGHT then
         game_state = 'stop'
+        
     end
   end
 end
