@@ -32,6 +32,7 @@ local pipes = {}
 --local pipesPair = PipesPair()
 
 local spwanTimer = 0
+local game_state = 'play'
 
 love.graphics.keypressed = {}
 
@@ -81,14 +82,15 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
+  if game_state == 'play' then
     spwanTimer = spwanTimer + dt
     
     backgroundX_Position = ( backgroundX_Position + BACKGROUND_SPEED * dt ) % BACKGROUND_LOOPING_POINT
     groundX_Positiion = ( groundX_Positiion + GROUND_SPEED * dt ) % GROUND_LOOPING_POINT
 
     bird:update(dt)
+    
     if spwanTimer > 2.5 then
-
         table.insert( pipes, PipePair(60, 180) )
         spwanTimer = 0
     end
@@ -97,13 +99,21 @@ function love.update(dt)
 
     for k, pipe in pairs(pipes) do
         pipe:update(dt)
+        if bird:collide(pipe) then
+            game_state = 'collide'
+        end
 
         if pipe.pipes['top'].x < -pipe.pipes['top'].width then
             print("pipe pair removed from table")
             table.remove(pipes, k)
         end
     end
-
+  else if game_state == 'collide' then
+    bird:update(dt)
+    if bird.y > VIRTUAL_HEIGHT then
+        game_state = 'stop'
+    end
+  end
 end
 
 function love.draw()
@@ -113,10 +123,12 @@ function love.draw()
 
     love.graphics.draw(background,-backgroundX_Position ,0)
     love.graphics.draw(ground,-groundX_Positiion,VIRTUAL_HEIGHT - 16)
-    bird:render()
+    
     for k, pipe in pairs(pipes) do
         pipe:render()
     end
+    bird:render()
 
     push:finish()
+end
 end

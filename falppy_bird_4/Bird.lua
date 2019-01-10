@@ -1,7 +1,9 @@
 
 Bird = Class{}
+require 'PipesPair'
 
 local  gravity = 20
+local collison = false
 
 function Bird:init()
     self.x = VIRTUAL_WIDTH / 2
@@ -28,6 +30,19 @@ function Bird:update(dt)
     end
 end
 
+function Bird:collide(pipesPair)
+    if ( ( self.x > pipesPair.pipes['top'].x +  pipesPair.pipes['top'].width )  or (( self.x + self.width) < pipesPair.pipes['top'].x + 5 ) or ( (self.y > pipesPair.pipes['top'].y - 5 ) and ((self.y + self.height) < pipesPair.pipes['bottom'].y + 5 ))) then
+        return false
+    else
+        collison = true
+        return true
+    end 
+end
+
 function Bird:render()
-    love.graphics.draw(self.image, self.x, self.y)
+    if collison == true then
+        love.graphics.draw(self.image, self.x, self.y, 0, 1, -1)
+    else
+        love.graphics.draw(self.image, self.x, self.y)
+    end
 end
